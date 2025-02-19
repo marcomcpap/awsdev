@@ -1,13 +1,11 @@
-name: Deploy VPC na AWS
+name: Destroy VPC na AWS
 
 on:
-  push:
-    branches:
-      - main  # Executa quando há um push na branch main
+  workflow_dispatch  # Permite executar manualmente a destruição da VPC
 
 jobs:
-  deploy:
-    name: Criar VPC na AWS com Terraform
+  destroy:
+    name: Deletar VPC da AWS com Terraform
     runs-on: ubuntu-latest
 
     steps:
@@ -31,11 +29,11 @@ jobs:
           unzip terraform.zip
           sudo mv terraform /usr/local/bin/
 
-      - name: Inicializar o Terraform
+      - name: Inicializar Terraform
         run: terraform init
 
       - name: Validar Configuração Terraform
         run: terraform validate
 
-      - name: Aplicar Terraform
-        run: terraform apply -auto-approve
+      - name: Executar Terraform Destroy
+        run: terraform destroy -auto-approve
