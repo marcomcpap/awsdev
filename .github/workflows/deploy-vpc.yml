@@ -1,0 +1,41 @@
+name: Deploy VPC na AWS
+
+on:
+  push:
+    branches:
+      - main  # Executa quando há um push na branch main
+
+jobs:
+  deploy:
+    name: Criar VPC na AWS com Terraform
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write  # Permite que o GitHub Actions use OIDC para autenticar na AWS
+      contents: read
+
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v3
+
+      - name: Configurar Credenciais AWS via OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::442426878063:role/github-actions-role  # Substitua pelo ARN do seu role IAM
+          aws-region: us-east-1
+
+      - name: Instalar Terraform
+        run: |
+          sudo apt-get update && sudo apt-get install -y unzip
+          curl -o terraform.zip https://releases.hashicorp.com/terraform/1.3.0/terraform_1.3.0_linux_amd64.zip
+          unzip terraform.zip
+          sudo mv terraform /usr/local/bin/
+
+      - name: Inicializar o Terraform
+        run: terraform init
+
+      - name: Validar Configuração Terraform
+        run: terraform validate
+
+      - name: Aplicar Terraform
+        run: terraform apply -auto-approve
