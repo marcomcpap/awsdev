@@ -10,19 +10,19 @@ jobs:
     name: Criar VPC na AWS com Terraform
     runs-on: ubuntu-latest
 
-    permissions:
-      id-token: write  # Permite que o GitHub Actions use OIDC para autenticar na AWS
-      contents: read
-
     steps:
       - name: Checkout do Código
         uses: actions/checkout@v3
 
-      - name: Configurar Credenciais AWS via OIDC
+      - name: Configurar Credenciais AWS via Secrets
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::442426878063:role/github-actions-role  # Substitua pelo ARN do seu role IAM
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+
+      - name: Testar Conexão com a AWS
+        run: aws sts get-caller-identity
 
       - name: Instalar Terraform
         run: |
